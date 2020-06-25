@@ -52,7 +52,7 @@ public class PowerArmor extends ArmorItem{
 	public boolean shouldSyncTag() {
 		return true;
 	}
-
+	
 	@Override
 	@Nullable
 	public CompoundNBT getShareTag(ItemStack stack) {
@@ -74,7 +74,7 @@ public class PowerArmor extends ArmorItem{
 		});
 		CrudeTechMod.log("readShareTag end");
 	}
-
+	
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip,
 			ITooltipFlag flagIn) {

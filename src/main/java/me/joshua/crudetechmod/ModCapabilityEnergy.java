@@ -1,5 +1,7 @@
 package me.joshua.crudetechmod;
 
+import java.util.Random;
+
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.IntNBT;
 import net.minecraft.util.Direction;
@@ -21,6 +23,8 @@ public class ModCapabilityEnergy
             @Override
             public INBT writeNBT(Capability<ModIEnergyStorage> capability, ModIEnergyStorage instance, Direction side)
             {
+            	
+            	CrudeTechMod.log("writeNBT " + IntNBT.valueOf(instance.getEnergyStored()));
                 return IntNBT.valueOf(instance.getEnergyStored());
             }
 
@@ -30,6 +34,7 @@ public class ModCapabilityEnergy
                 if (!(instance instanceof ModEnergyStorage))
                     throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
                 ((ModEnergyStorage)instance).energy = ((IntNBT)nbt).getInt();
+                CrudeTechMod.log("readNBT " + ((ModEnergyStorage)instance).energy);
             }
         },
         () -> new ModEnergyStorage(1000));

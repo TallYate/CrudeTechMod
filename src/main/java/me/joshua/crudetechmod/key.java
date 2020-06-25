@@ -32,20 +32,12 @@ public class key {
 		ctx.get().enqueueWork(() -> {
 			ServerPlayerEntity sender = ctx.get().getSender();
 			ItemStack feet = ctx.get().getSender().getItemStackFromSlot(EquipmentSlotType.FEET);
-			if(sender.getHeldItemMainhand().getItem()==Items.IRON_SHOVEL) {
-				CrudeTechMod.log("Iron Shovel");
-				sender.getHeldItemMainhand().damageItem(1, sender, player -> {});
-			}
-			
-			else if (msg.key == 0 && feet.getItem() == ModItems.KABOOTS.get()) {
-				
+			if (msg.key == 0 && feet.getItem() == ModItems.KABOOTS.get()) {
+
 				createBoom(sender, true);
-				feet.damageItem(1, sender, player -> {});
+				feet.damageItem(1, sender, player -> {
+				});
 			}
-			
-			
-			
-			
 		});
 		ctx.get().setPacketHandled(true);
 	}

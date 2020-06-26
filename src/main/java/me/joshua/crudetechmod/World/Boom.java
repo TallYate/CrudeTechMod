@@ -1,4 +1,4 @@
-package me.joshua.crudetechmod;
+package me.joshua.crudetechmod.World;
 
 import java.util.Collections;
 import java.util.List;

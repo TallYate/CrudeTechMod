@@ -1,5 +1,6 @@
-package me.joshua.crudetechmod;
+package me.joshua.crudetechmod.Items;
 
+import me.joshua.crudetechmod.CrudeTechMod;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Item;

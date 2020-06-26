@@ -1,7 +1,9 @@
-package me.joshua.crudetechmod;
+package me.joshua.crudetechmod.Packets;
 
 import java.util.function.Supplier;
 
+import me.joshua.crudetechmod.Items.ModItems;
+import me.joshua.crudetechmod.World.Boom;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;

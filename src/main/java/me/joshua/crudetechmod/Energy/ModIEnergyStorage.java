@@ -1,4 +1,4 @@
-package me.joshua.crudetechmod;
+package me.joshua.crudetechmod.Energy;
 
 import net.minecraftforge.energy.IEnergyStorage;
 

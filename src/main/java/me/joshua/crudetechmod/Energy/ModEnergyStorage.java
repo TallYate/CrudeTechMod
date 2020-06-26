@@ -1,4 +1,4 @@
-package me.joshua.crudetechmod;
+package me.joshua.crudetechmod.Energy;
 
 import net.minecraft.nbt.IntNBT;
 import net.minecraftforge.common.util.INBTSerializable;

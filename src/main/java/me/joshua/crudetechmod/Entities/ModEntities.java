@@ -1,5 +1,6 @@
-package me.joshua.crudetechmod;
+package me.joshua.crudetechmod.Entities;
 
+import me.joshua.crudetechmod.CrudeTechMod;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;

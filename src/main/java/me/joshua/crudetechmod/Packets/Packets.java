@@ -1,5 +1,6 @@
-package me.joshua.crudetechmod;
+package me.joshua.crudetechmod.Packets;
 
+import me.joshua.crudetechmod.CrudeTechMod;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;

@@ -1,5 +1,6 @@
-package me.joshua.crudetechmod;
+package me.joshua.crudetechmod.Energy;
 
+import me.joshua.crudetechmod.CrudeTechMod;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.IntNBT;
 import net.minecraft.util.Direction;

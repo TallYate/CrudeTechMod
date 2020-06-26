@@ -2,6 +2,9 @@ package me.joshua.crudetechmod;
 
 import org.lwjgl.glfw.GLFW;
 
+import me.joshua.crudetechmod.Items.ModItems;
+import me.joshua.crudetechmod.Packets.Packets;
+import me.joshua.crudetechmod.Packets.key;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.settings.KeyBinding;

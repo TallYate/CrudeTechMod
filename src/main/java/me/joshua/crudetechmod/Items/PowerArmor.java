@@ -1,9 +1,12 @@
-package me.joshua.crudetechmod;
+package me.joshua.crudetechmod.Items;
 
 import java.util.List;
 
 import javax.annotation.Nullable;
 
+import me.joshua.crudetechmod.CrudeTechMod;
+import me.joshua.crudetechmod.Energy.ModCapabilityEnergy;
+import me.joshua.crudetechmod.Energy.ModEnergyStorage;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;

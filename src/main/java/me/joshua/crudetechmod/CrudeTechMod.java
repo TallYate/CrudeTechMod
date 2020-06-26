@@ -3,6 +3,11 @@ package me.joshua.crudetechmod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import me.joshua.crudetechmod.Energy.ModCapabilityEnergy;
+import me.joshua.crudetechmod.Entities.ModEntities;
+import me.joshua.crudetechmod.Items.ModItems;
+import me.joshua.crudetechmod.Packets.Packets;
+import me.joshua.crudetechmod.Packets.key;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;

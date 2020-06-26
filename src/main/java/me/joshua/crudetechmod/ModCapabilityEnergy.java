@@ -9,9 +9,13 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.EnergyStorage;
 
-public class ModCapabilityEnergy
+public class ModCapabilityEnergy implements INBTSerializable
 {
     @CapabilityInject(ModIEnergyStorage.class)
     public static Capability<ModIEnergyStorage> ENERGY = null;
@@ -39,4 +43,16 @@ public class ModCapabilityEnergy
         },
         () -> new ModEnergyStorage(1000));
     }
+
+	@Override
+	public INBT serializeNBT() {
+		
+		return null;
+	}
+
+	@Override
+	public void deserializeNBT(INBT nbt) {
+		
+	}
+
 }

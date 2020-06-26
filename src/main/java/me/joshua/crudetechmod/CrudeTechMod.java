@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -42,6 +43,7 @@ public class CrudeTechMod {
 	private void setup(final FMLCommonSetupEvent event) {
 		Packets.INSTANCE.registerMessage(Packets.i++, key.class, key::encode, key::decode, key::handle);
 		ModCapabilityEnergy.register();
+		//CapabilityManager.INSTANCE.register(ModIEnergyStorage.class, ModCapabilityEnergy.ENERGY.getStorage(), ModEnergyStorage.class);
 	}
 	
 	private void doClientStuff(final FMLClientSetupEvent event) {

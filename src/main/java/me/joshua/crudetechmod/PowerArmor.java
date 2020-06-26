@@ -5,26 +5,28 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.IArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.event.entity.living.LivingDestroyBlockEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 
-public class PowerArmor extends ArmorItem{
+//For Testing Event - remove later
+@Mod.EventBusSubscriber(modid = CrudeTechMod.MOD_ID, bus = Bus.FORGE)
+public class PowerArmor extends ArmorItem {
 	public PowerArmor(IArmorMaterial materialIn, EquipmentSlotType slot, Properties builder) {
 		super(materialIn, slot, builder);
 	}
@@ -52,7 +54,7 @@ public class PowerArmor extends ArmorItem{
 	public boolean shouldSyncTag() {
 		return true;
 	}
-	
+
 	@Override
 	@Nullable
 	public CompoundNBT getShareTag(ItemStack stack) {
@@ -65,7 +67,6 @@ public class PowerArmor extends ArmorItem{
 		return tag;
 	}
 
-	
 	@Override
 	public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt) {
 		stack.getCapability(ModCapabilityEnergy.ENERGY, null).ifPresent(handler -> {
@@ -75,6 +76,20 @@ public class PowerArmor extends ArmorItem{
 		CrudeTechMod.log("readShareTag end");
 	}
 	
+	
+	//Testing Event
+	@SubscribeEvent
+	public static void onJump(LivingJumpEvent event) {
+		CrudeTechMod.log(
+				"Jump on " + (event.getEntity().getEntityWorld().isRemote ? "Client" : "Server") + "-Side");
+		if (event.getEntityLiving().getHeldItemMainhand().getItem() == ModItems.KABOOTS.get()) {
+			event.getEntityLiving().getHeldItemMainhand().getCapability(ModCapabilityEnergy.ENERGY, null)
+					.ifPresent(handler -> {
+						handler.receiveEnergy(100, false);
+					});
+		}
+	}
+
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip,
 			ITooltipFlag flagIn) {

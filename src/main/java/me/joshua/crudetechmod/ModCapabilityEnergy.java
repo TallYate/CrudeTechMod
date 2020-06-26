@@ -15,7 +15,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.EnergyStorage;
 
-public class ModCapabilityEnergy implements INBTSerializable
+public class ModCapabilityEnergy
 {
     @CapabilityInject(ModIEnergyStorage.class)
     public static Capability<ModIEnergyStorage> ENERGY = null;
@@ -43,16 +43,4 @@ public class ModCapabilityEnergy implements INBTSerializable
         },
         () -> new ModEnergyStorage(1000));
     }
-
-	@Override
-	public INBT serializeNBT() {
-		
-		return null;
-	}
-
-	@Override
-	public void deserializeNBT(INBT nbt) {
-		
-	}
-
 }

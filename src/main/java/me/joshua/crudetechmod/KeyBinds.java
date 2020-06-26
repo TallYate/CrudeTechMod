@@ -3,6 +3,7 @@ package me.joshua.crudetechmod;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -28,10 +29,12 @@ public class KeyBinds {
 
 	@SubscribeEvent
 	public static void onInput(InputEvent.KeyInputEvent event) {
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientPlayerEntity player = minecraft.player;
 		if (event.getKey() == keyBindings[0].getKey().getKeyCode() && !press[0]
-				&& Minecraft.getInstance().player.getItemStackFromSlot(EquipmentSlotType.FEET)
+				&& player.getItemStackFromSlot(EquipmentSlotType.FEET)
 						.getItem() == ModItems.KABOOTS.get()) {
-			key.createBoom(Minecraft.getInstance().player, false);
+			key.createBoom(player, false);
 			Packets.INSTANCE.sendToServer(new key(0));
 			press[0] = true;
 		}

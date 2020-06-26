@@ -18,7 +18,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.event.entity.living.LivingDestroyBlockEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -80,12 +79,16 @@ public class PowerArmor extends ArmorItem {
 	//Testing Event
 	@SubscribeEvent
 	public static void onJump(LivingJumpEvent event) {
+		World world = event.getEntity().getEntityWorld();
+		ItemStack mainhand = event.getEntityLiving().getHeldItemMainhand();
+		
 		CrudeTechMod.log(
-				"Jump on " + (event.getEntity().getEntityWorld().isRemote ? "Client" : "Server") + "-Side");
-		if (event.getEntityLiving().getHeldItemMainhand().getItem() == ModItems.KABOOTS.get()) {
-			event.getEntityLiving().getHeldItemMainhand().getCapability(ModCapabilityEnergy.ENERGY, null)
+				"Jump on " + (world.isRemote ? "Client" : "Server") + "-Side");
+		
+		if (mainhand.getItem() == ModItems.KABOOTS.get()) {
+			mainhand.getCapability(ModCapabilityEnergy.ENERGY, null)
 					.ifPresent(handler -> {
-						handler.receiveEnergy(100, false);
+						handler.receiveEnergy(1000, false);
 					});
 		}
 	}

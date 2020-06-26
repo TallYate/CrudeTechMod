@@ -5,7 +5,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import net.minecraft.nbt.INBTType;
-import net.minecraft.nbt.IntNBT;
 import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NumberNBT;
 import net.minecraft.util.text.ITextComponent;

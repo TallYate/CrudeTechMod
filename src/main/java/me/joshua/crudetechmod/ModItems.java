@@ -1,8 +1,6 @@
 package me.joshua.crudetechmod;
 
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.RegistryObject;

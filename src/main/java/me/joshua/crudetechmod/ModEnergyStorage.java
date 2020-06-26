@@ -1,14 +1,9 @@
 package me.joshua.crudetechmod;
 
-import java.io.DataOutput;
-import java.io.IOException;
-
-import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.IntNBT;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.energy.EnergyStorage;
 
-public class ModEnergyStorage implements ModIEnergyStorage, INBTSerializable {
+public class ModEnergyStorage implements ModIEnergyStorage, INBTSerializable<IntNBT> {
 
 	protected int energy;
 	protected int capacity;
@@ -81,30 +76,13 @@ public class ModEnergyStorage implements ModIEnergyStorage, INBTSerializable {
 		this.energy = energy;
 	}
 
-	@SuppressWarnings("null")
 	@Override
-	public INBT serializeNBT() {
-		
-		
-		DataOutput d = null;
-		try {
-			d.writeInt(this.energy);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		IntNBT a = null;
-		try {
-			a.write(d);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return a;
+	public IntNBT serializeNBT() {
+		return IntNBT.valueOf(this.energy);
 	}
 
 	@Override
-	public void deserializeNBT(INBT nbt) {
+	public void deserializeNBT(IntNBT nbt) {
 		this.energy = ((IntNBT)nbt).getInt();
 	}
 }

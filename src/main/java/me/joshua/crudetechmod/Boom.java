@@ -14,30 +14,22 @@ import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.DamagingProjectileEntity;
 import net.minecraft.fluid.IFluidState;
-import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.potion.Effects;
-import net.minecraft.stats.Stats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -143,7 +135,6 @@ public class Boom {
 	 */
 	public void doExplosionA(Boolean server) {
 		Set<BlockPos> set = Sets.newHashSet();
-		int i = 16;
 		if(server) {
 		for (int j = 0; j < 16; ++j) {
 			for (int k = 0; k < 16; ++k) {
@@ -161,7 +152,7 @@ public class Boom {
 						double d6 = this.y;
 						double d8 = this.z;
 
-						for (float f1 = 0.3F; f > 0.0F; f -= 0.22500001F) {
+						while (f > 0.0F) {
 							BlockPos blockpos = new BlockPos(d4, d6, d8);
 							BlockState blockstate = this.world.getBlockState(blockpos);
 							IFluidState ifluidstate = this.world.getFluidState(blockpos);
@@ -187,6 +178,7 @@ public class Boom {
 							d4 += d0 * (double) 0.3F;
 							d6 += d1 * (double) 0.3F;
 							d8 += d2 * (double) 0.3F;
+							f -= 0.22500001F;
 						}
 					}
 				}
@@ -279,7 +271,6 @@ public class Boom {
 
 			for (BlockPos blockpos : this.affectedBlockPositions) {
 				BlockState blockstate = this.world.getBlockState(blockpos);
-				Block block = blockstate.getBlock();
 				if (!blockstate.isAir(this.world, blockpos)) {
 					BlockPos blockpos1 = blockpos.toImmutable();
 					this.world.getProfiler().startSection("explosion_blocks");
@@ -312,7 +303,7 @@ public class Boom {
 
 		if (this.causesFire) {
 			for (BlockPos blockpos2 : this.affectedBlockPositions) {
-				if (this.random.nextInt(3) == 0 && this.world.getBlockState(blockpos2).isAir()
+				if (this.random.nextInt(3) == 0 && this.world.getBlockState(blockpos2).getBlock()==Blocks.AIR
 						&& this.world.getBlockState(blockpos2.down()).isOpaqueCube(this.world, blockpos2.down())) {
 					this.world.setBlockState(blockpos2, Blocks.FIRE.getDefaultState());
 				}

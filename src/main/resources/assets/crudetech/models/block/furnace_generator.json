@@ -1,0 +1,8 @@
+{
+    "parent": "block/orientable",
+    "textures": {
+        "top": "crudetech:blocks/furnace_top",
+        "front": "crudetech:blocks/furnace_front",
+        "side": "crudetech:blocks/furnace_side"
+    }
+}

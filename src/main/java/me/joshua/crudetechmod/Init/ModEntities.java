@@ -1,4 +1,4 @@
-package me.joshua.crudetechmod.Entities;
+package me.joshua.crudetechmod.Init;
 
 import me.joshua.crudetechmod.CrudeTechMod;
 import net.minecraft.entity.EntityType;

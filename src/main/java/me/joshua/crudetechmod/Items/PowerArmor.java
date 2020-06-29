@@ -13,16 +13,15 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.IArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.IntNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 
@@ -37,20 +36,29 @@ public class PowerArmor extends ArmorItem {
 		return new ModEnergyStorage(10000, 1000, 1000);
 	}
 
-	@Override
-	public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-		return new ICapabilityProvider() {
-			protected ModEnergyStorage storage = newStorage();
-			protected LazyOptional<ModEnergyStorage> storageHolder = LazyOptional.of(() -> storage);
+@Override
+public ICapabilitySerializable<IntNBT> initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
+	return new ICapabilitySerializable<IntNBT>() {
+		protected ModEnergyStorage storage = newStorage();
+		protected LazyOptional<ModEnergyStorage> storageHolder = LazyOptional.of(() -> storage);
 
-			public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-				if (cap == ModCapabilityEnergy.ENERGY) {
-					return storageHolder.cast();
-				}
-				return LazyOptional.empty();
+		public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
+			if (cap == ModCapabilityEnergy.ENERGY) {
+				return storageHolder.cast();
 			}
-		};
-	}
+			return LazyOptional.empty();
+		}
+		@Override
+		public IntNBT serializeNBT() {
+			return IntNBT.valueOf(storage.getEnergyStored());
+		}
+
+		@Override
+		public void deserializeNBT(IntNBT nbt) {
+			storage.setEnergy(nbt.getInt());
+		}
+	};
+}
 
 	@Override
 	public boolean shouldSyncTag() {
@@ -76,24 +84,6 @@ public class PowerArmor extends ArmorItem {
 			CrudeTechMod.log("readEnergy: " + handler.getEnergyStored());
 		});
 		CrudeTechMod.log("readShareTag end");
-	}
-	
-	
-	//Testing Event
-	@SubscribeEvent
-	public static void onJump(LivingJumpEvent event) {
-		World world = event.getEntity().getEntityWorld();
-		ItemStack mainhand = event.getEntityLiving().getHeldItemMainhand();
-		
-		CrudeTechMod.log(
-				"Jump on " + (world.isRemote ? "Client" : "Server") + "-Side");
-		
-		if (mainhand.getItem() == ModItems.KABOOTS.get()) {
-			mainhand.getCapability(ModCapabilityEnergy.ENERGY, null)
-					.ifPresent(handler -> {
-						handler.receiveEnergy(1000, false);
-					});
-		}
 	}
 
 	@Override

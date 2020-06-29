@@ -14,6 +14,8 @@ import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import me.joshua.crudetechmod.CrudeTechMod;
+import me.joshua.crudetechmod.Entities.util;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -129,11 +131,15 @@ public class Boom {
 			return 0.0F;
 		}
 	}
-
+	
+	
+	public void doExplosionA(boolean server) {
+		this.doExplosionA(server, true);
+	}
 	/**
 	 * Does the first part of the explosion (destroy blocks)
 	 */
-	public void doExplosionA(Boolean server) {
+	public void doExplosionA(boolean server, boolean damage) {
 		Set<BlockPos> set = Sets.newHashSet();
 		if(server) {
 		for (int j = 0; j < 16; ++j) {
@@ -214,19 +220,20 @@ public class Boom {
 						d9 = d9 / d13;
 						double d14 = (double) getBlockDensity(vec3d, entity);
 						double d10 = (1.0D - d12) * d14;
-						float dmg = ((float) ((int) ((d10 * d10 + d10) / 2.0D * 7.0D * (double) f3 + 1.0D))) / 4.0F;
-						if (entity instanceof LivingEntity) {
-							LivingEntity living = (LivingEntity) entity;
-							if(living.getHealth()-dmg>0) {
-								living.setHealth(living.getHealth() - dmg);
-								living.fallDistance=0;
-							}
-							else {
-								living.attackEntityFrom(this.damageSource, dmg);
-							}
-						} else {
+						float dmg = ((float) ((int) ((d10 * d10 + d10) / 2.0D * 7.0D * (double) f3 + 1.0D))) / 6.0F;
+						if(entity instanceof PlayerEntity && damage) {
+							PlayerEntity player = (PlayerEntity) entity;
+							CrudeTechMod.log("if.");
+							if(!player.isSpectator() && !player.isCreative())
+								util.damageEntity(player, this.damageSource, dmg);
+						} else if (damage) {
+							CrudeTechMod.log("else if.");
 							entity.attackEntityFrom(this.getDamageSource(), dmg);
 						}
+						else {
+							CrudeTechMod.log("else.");
+							}
+						entity.fallDistance=0;
 						double d11 = d10;
 						if (entity instanceof LivingEntity) {
 							d11 = ProtectionEnchantment.getBlastDamageReduction((LivingEntity) entity, d10);

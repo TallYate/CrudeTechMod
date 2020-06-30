@@ -71,9 +71,7 @@ public ICapabilitySerializable<IntNBT> initCapabilities(ItemStack stack, @Nullab
 		CompoundNBT tag = stack.getOrCreateTag();
 		stack.getCapability(ModCapabilityEnergy.ENERGY, null).ifPresent(handler -> {
 			tag.putInt("Energy", handler.getEnergyStored());
-			CrudeTechMod.log("getEnergy: " + handler.getEnergyStored());
 		});
-		CrudeTechMod.log("getShareTag end");
 		return tag;
 	}
 
@@ -81,9 +79,7 @@ public ICapabilitySerializable<IntNBT> initCapabilities(ItemStack stack, @Nullab
 	public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt) {
 		stack.getCapability(ModCapabilityEnergy.ENERGY, null).ifPresent(handler -> {
 			handler.setEnergy(nbt.getInt("Energy"));
-			CrudeTechMod.log("readEnergy: " + handler.getEnergyStored());
 		});
-		CrudeTechMod.log("readShareTag end");
 	}
 
 	@Override

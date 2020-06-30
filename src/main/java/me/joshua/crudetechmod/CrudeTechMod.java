@@ -9,8 +9,8 @@ import me.joshua.crudetechmod.Init.ModContainerTypes;
 import me.joshua.crudetechmod.Init.ModEntities;
 import me.joshua.crudetechmod.Init.ModItems;
 import me.joshua.crudetechmod.Init.ModTileEntityTypes;
-import me.joshua.crudetechmod.Packets.Packets;
-import me.joshua.crudetechmod.Packets.key;
+import me.joshua.crudetechmod.Packets.ExplosiveJumpPacket;
+import me.joshua.crudetechmod.Packets.GeneratorPacket;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -42,7 +42,8 @@ public class CrudeTechMod {
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {
-		Packets.INSTANCE.registerMessage(Packets.i++, key.class, key::encode, key::decode, key::handle);
+		ExplosiveJumpPacket.INSTANCE.registerMessage(ExplosiveJumpPacket.i++, ExplosiveJumpPacket.class, ExplosiveJumpPacket::encode, ExplosiveJumpPacket::decode, ExplosiveJumpPacket::handle);
+		GeneratorPacket.INSTANCE.registerMessage(GeneratorPacket.i++, GeneratorPacket.class, GeneratorPacket::encode, GeneratorPacket::decode, GeneratorPacket::handle);
 		ModCapabilityEnergy.register();
 	}
 

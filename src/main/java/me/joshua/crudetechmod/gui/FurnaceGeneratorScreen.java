@@ -41,6 +41,7 @@ public class FurnaceGeneratorScreen extends ContainerScreen<FurnaceGeneratorCont
 		this.container.tileEntity.getCapability(ModCapabilityEnergy.ENERGY).ifPresent(handler -> {
 			this.font.drawString("Energy: " + handler.getEnergyStored(), 0, 0, 1238767);
 		});
+		this.font.drawString("BurnTime: " + this.container.tileEntity.burnTime, 0, 8, 1238767);
 	}
 
 	@Override

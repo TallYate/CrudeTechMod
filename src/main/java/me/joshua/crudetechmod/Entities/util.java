@@ -1,7 +1,5 @@
 package me.joshua.crudetechmod.Entities;
 
-import com.mojang.authlib.GameProfile;
-
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,7 +8,6 @@ import net.minecraft.potion.Effects;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.CombatRules;
 import net.minecraft.util.DamageSource;
-import net.minecraft.world.server.ServerWorld;
 
 public class util{
 

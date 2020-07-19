@@ -3,18 +3,16 @@ package me.joshua.crudetechmod.Blocks;
 import javax.annotation.Nonnull;
 
 import me.joshua.crudetechmod.CrudeTechMod;
-import me.joshua.crudetechmod.Energy.ModCapabilityEnergy;
-import me.joshua.crudetechmod.Energy.ModEnergyStorage;
+import me.joshua.crudetechmod.Init.ModBlocks;
 import me.joshua.crudetechmod.Init.ModTileEntityTypes;
-import me.joshua.crudetechmod.Packets.GeneratorPacket;
 import me.joshua.crudetechmod.gui.FurnaceGeneratorContainer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
@@ -32,31 +30,78 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 public class FurnaceGeneratorTileEntity extends LockableLootTileEntity implements ITickableTileEntity {
-	public final int SIZE = 4;
-	private NonNullList<ItemStack> generatorContents = NonNullList.withSize(SIZE, ItemStack.EMPTY);
+	public final int SIZE = 5;
+	protected NonNullList<ItemStack> generatorContents = NonNullList.withSize(SIZE, ItemStack.EMPTY);
 	protected int numPlayersUsing;
-	private IItemHandlerModifiable items = createHandler();
-	private LazyOptional<IItemHandlerModifiable> itemHandler = LazyOptional.of(() -> items);
+	protected IItemHandlerModifiable items = createHandler();
+	protected LazyOptional<IItemHandlerModifiable> itemHolder = LazyOptional.of(() -> items);
+	public double excessEnergy = 0;
+	public double excessTick = 0;
+	public int percBurn = 100;
 	public int burnTime = 0;
+	public int fullBurnTime = 0;
+	public boolean requiresUpdate = true;
+	public int energyMult = 12;
+	public int percEnergy = 100;
 
-	private ModEnergyStorage energy = new ModEnergyStorage(100000, 1000);
-	private LazyOptional<ModEnergyStorage> energyHolder = LazyOptional.of(() -> energy);
+	protected static BlockPos negative;
+	protected static int x;
+	protected static int y;
+	protected static int z;
+	protected EnergyStorage energy = new EnergyStorage(100000);
+	protected LazyOptional<EnergyStorage> energyHolder = LazyOptional.of(() -> energy);
 
 	public FurnaceGeneratorTileEntity(TileEntityType<?> typeIn) {
+
 		super(typeIn);
 	}
 
 	public FurnaceGeneratorTileEntity() {
 		this(ModTileEntityTypes.FURNACE_GENERATOR.get());
+	}
+
+	public void updateNegPos(BlockPos pos) {
+		int x = 0;
+		int y = 0;
+		int z = 0;
+		while (this.world.getBlockState(pos.add(x - 1, y, z)).getBlock() == ModBlocks.FURNACE_GENERATOR.get()) {
+			x--;
+		}
+		while (this.world.getBlockState(pos.add(x, y - 1, z)).getBlock() == ModBlocks.FURNACE_GENERATOR.get()) {
+			y--;
+		}
+		while (this.world.getBlockState(pos.add(x, y, z - 1)).getBlock() == ModBlocks.FURNACE_GENERATOR.get()) {
+			z--;
+		}
+
+		BlockPos neg = pos.add(x, y, z);
+		CrudeTechMod.log(Integer.toString(x) + Integer.toString(y) + Integer.toString(z));
+		CrudeTechMod.log(neg.toString());
+
+		int x2 = 0;
+		int y2 = 0;
+		int z2 = 0;
+		while (this.world.getBlockState(pos.add(x2 + 1, y2, z2)).getBlock() == ModBlocks.FURNACE_GENERATOR.get()) {
+			x2++;
+		}
+		while (this.world.getBlockState(pos.add(x2, y2 + 1, z2)).getBlock() == ModBlocks.FURNACE_GENERATOR.get()) {
+			y2++;
+		}
+		while (this.world.getBlockState(pos.add(x2, y2, z2 + 1)).getBlock() == ModBlocks.FURNACE_GENERATOR.get()) {
+			z2++;
+		}
+
+		CrudeTechMod.log(Integer.toString(x2) + Integer.toString(y2) + Integer.toString(z2));
 	}
 
 	public void tick() {
@@ -71,19 +116,36 @@ public class FurnaceGeneratorTileEntity extends LockableLootTileEntity implement
 					} else {
 						fuel.setCount(fuel.getCount() - 1);
 					}
-					this.burnTime += time;
+					double burn = time / (this.percBurn / 100.0D);
+					int burn2 = (int) burn;
+					this.excessTick += burn - burn2;
+					this.burnTime += burn2;
+					this.fullBurnTime = (int) burn;
+					if (this.excessTick >= 1) {
+						this.burnTime += (int) this.excessEnergy;
+						excessEnergy = excessEnergy % 1;
+					}
 				}
 			}
 		} else {
 			this.burnTime--;
-			energy.receiveEnergy(10, false);
+			float en = ((this.percEnergy + multiplier(this.getItems().get(1).getItem())) / 100.0F)
+					* (float) this.energyMult;
+
+			int n = (int) en;
+			this.energy.receiveEnergy(n, false);
+			this.excessEnergy += (en - n);
+			if (this.excessEnergy >= 1) {
+				this.energy.receiveEnergy((int) this.excessEnergy, false);
+				excessEnergy = excessEnergy % 1;
+			}
 		}
 
 		if (this.energy.getEnergyStored() > 0) {
 			for (int i = 2; i < SIZE; i++) {
 				ItemStack stack = items.getStackInSlot(i);
 				if (stack != null) {
-					stack.getCapability(ModCapabilityEnergy.ENERGY).ifPresent(handler -> {
+					stack.getCapability(CapabilityEnergy.ENERGY).ifPresent(handler -> {
 						int ext = energy.extractEnergy(energy.getMaxEnergyStored() / 100, false);
 						int rec = handler.receiveEnergy(ext, false);
 						energy.receiveEnergy(ext - rec, false);
@@ -91,18 +153,39 @@ public class FurnaceGeneratorTileEntity extends LockableLootTileEntity implement
 				}
 			}
 		}
+
+		if (requiresUpdate) {
+			updateTile();
+			requiresUpdate = false;
+		}
+	}
+
+	private static int multiplier(Item item) {
+		int x = 0;
+		if (item == Items.IRON_INGOT) {
+			x = 1;
+		} else if (item == Items.GOLD_INGOT) {
+			x = 2;
+		} else if (item == Items.DIAMOND) {
+			x = 4;
+		}
+		return x;
 	}
 
 	public int getEnergy() {
 		return this.energy.getEnergyStored();
 	}
 
+	public int getMaxEnergy() {
+		return this.energy.getMaxEnergyStored();
+	}
+
 	public void setEnergy(int x) {
-		this.energy.setEnergy(x);
+		this.energy.receiveEnergy(x - this.getEnergy(), false);
 	}
 
 	public int getBurnTime() {
-		return this.burnTime;
+		return (int) this.burnTime;
 	}
 
 	public void setBurnTime(int x) {
@@ -119,7 +202,7 @@ public class FurnaceGeneratorTileEntity extends LockableLootTileEntity implement
 			CrudeTechMod.log("true");
 			return true;
 		case 2:
-			return stack.getCapability(ModCapabilityEnergy.ENERGY).isPresent();
+			return stack.getCapability(CapabilityEnergy.ENERGY).isPresent();
 		}
 		return true;
 
@@ -159,21 +242,8 @@ public class FurnaceGeneratorTileEntity extends LockableLootTileEntity implement
 
 		compound.putInt("Energy", this.energy.getEnergyStored());
 		compound.putInt("BurnTime", this.burnTime);
-
-		String side = "world is null ";
-		if (world != null) {
-			side = (this.world.isRemote ? "Client-Side " : "Server-Side ");
-		}
-
-		CrudeTechMod.log(side + "wrote Energy: " + Integer.toString(compound.getInt("Energy")));
-		CrudeTechMod.log(side + "wrote BurnTime: " + Integer.toString(compound.getInt("BurnTime")));
-
+		compound.putInt("FullBurnTime", this.fullBurnTime);
 		return compound;
-	}
-
-	public void readSpecial(int energy, int burnTime) {
-		this.energy.setEnergy(energy);
-		this.burnTime = burnTime;
 	}
 
 	@Override
@@ -183,25 +253,9 @@ public class FurnaceGeneratorTileEntity extends LockableLootTileEntity implement
 		if (!this.checkLootAndRead(compound)) {
 			ItemStackHelper.loadAllItems(compound, this.generatorContents);
 		}
-
-		if (this.world != null) {
-			if (this.world.isRemote) {
-				CrudeTechMod.log("sent packet");
-				GeneratorPacket.INSTANCE.sendToServer(
-						new GeneratorPacket(this.energy.getEnergyStored(), this.burnTime, false, this.pos));
-			}
-		} else {
-			this.energy.setEnergy(compound.getInt("Energy"));
-			this.burnTime = compound.getInt("BurnTime");
-		}
-
-		String side = "world is null ";
-		if (world != null) {
-			side = (this.world.isRemote ? "Client-Side " : "Server-Side ");
-		}
-
-		CrudeTechMod.log(side + "read Energy: " + Integer.toString(compound.getInt("Energy")));
-		CrudeTechMod.log(side + "read BurnTime: " + Integer.toString(compound.getInt("BurnTime")));
+		this.setEnergy(compound.getInt("Energy"));
+		this.burnTime = compound.getInt("BurnTime");
+		this.fullBurnTime = compound.getInt("FullBurnTime");
 	}
 
 	private void playSound(SoundEvent sound) {
@@ -210,22 +264,6 @@ public class FurnaceGeneratorTileEntity extends LockableLootTileEntity implement
 		double dz = (double) this.pos.getZ() + 0.5D;
 		this.world.playSound((PlayerEntity) null, dx, dy, dz, sound, SoundCategory.BLOCKS, 0.5F,
 				this.world.rand.nextFloat() * 0.1F + 0.5F);
-	}
-
-	@Override
-	public SUpdateTileEntityPacket getUpdatePacket() {
-		CompoundNBT nbt = new CompoundNBT();
-		nbt.putInt("Energy", this.energy.getEnergyStored());
-		SUpdateTileEntityPacket packet = new SUpdateTileEntityPacket(this.pos, 0, nbt);
-		CrudeTechMod.log("getUpdatePacket");
-		return packet;
-	}
-
-	@Override
-	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-		CompoundNBT nbt = pkt.getNbtCompound();
-		this.energy.setEnergy(nbt.getInt("Energy"));
-		CrudeTechMod.log("onDataPacket");
 	}
 
 	@Override
@@ -277,7 +315,7 @@ public class FurnaceGeneratorTileEntity extends LockableLootTileEntity implement
 		return 0;
 	}
 
-	public static void swapContents(FurnaceGeneratorTileEntity te, FurnaceGeneratorTileEntity otherTe) {
+	public static void swapChestContents(FurnaceGeneratorTileEntity te, FurnaceGeneratorTileEntity otherTe) {
 		NonNullList<ItemStack> list = te.getItems();
 		te.setItems(otherTe.getItems());
 		otherTe.setItems(list);
@@ -287,11 +325,13 @@ public class FurnaceGeneratorTileEntity extends LockableLootTileEntity implement
 	public void updateContainingBlockInfo() {
 		CrudeTechMod.log("updateContainingBlockInfo");
 		super.updateContainingBlockInfo();
-		if (this.itemHandler != null) {
-			this.itemHandler.invalidate();
-			this.itemHandler = null;
+		if (this.itemHolder != null) {
+			CrudeTechMod.log("	itemHolder invalidating and nulling");
+			this.itemHolder.invalidate();
+			this.itemHolder = null;
 		}
 		if (this.energyHolder != null) {
+			CrudeTechMod.log("	energyHolder invalidating and nulling");
 			this.energyHolder.invalidate();
 			this.energyHolder = null;
 		}
@@ -300,8 +340,8 @@ public class FurnaceGeneratorTileEntity extends LockableLootTileEntity implement
 	@Override
 	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nonnull Direction side) {
 		if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-			return itemHandler.cast();
-		} else if (cap == ModCapabilityEnergy.ENERGY) {
+			return itemHolder.cast();
+		} else if (cap == CapabilityEnergy.ENERGY) {
 			return energyHolder.cast();
 		} else {
 			return super.getCapability(cap, side);
@@ -316,11 +356,41 @@ public class FurnaceGeneratorTileEntity extends LockableLootTileEntity implement
 	public void remove() {
 		CrudeTechMod.log("removed furnace generator tileEntity");
 		super.remove();
-		if (itemHandler != null) {
-			itemHandler.invalidate();
+		if (itemHolder != null) {
+			CrudeTechMod.log("	invalidating itemHolder");
+			itemHolder.invalidate();
 		}
 		if (energyHolder != null) {
+			CrudeTechMod.log("	invalidating energyHolder");
 			energyHolder.invalidate();
 		}
 	}
+
+	public void updateTile() {
+		this.markDirty();
+		if (this.world != null) {
+			this.world.notifyBlockUpdate(pos, this.getBlockState(), this.getBlockState(), 3);
+		}
+	}
+
+	@Override
+	public SUpdateTileEntityPacket getUpdatePacket() {
+		return new SUpdateTileEntityPacket(this.pos, -1, this.getUpdateTag());
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+		handleUpdateTag(pkt.getNbtCompound());
+	}
+
+	@Override
+	public CompoundNBT getUpdateTag() {
+		return this.serializeNBT();
+	}
+
+	@Override
+	public void handleUpdateTag(CompoundNBT tag) {
+		this.read(tag);
+	}
+
 }

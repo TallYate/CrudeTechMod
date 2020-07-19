@@ -5,7 +5,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
-public class ModModifierSlot extends ModSingularSlot {
+public class ModModifierSlot extends SingularSlot {
 
 	public ModModifierSlot(IInventory inventory, int index, int x, int y) {
 		super(inventory, index, x, y);

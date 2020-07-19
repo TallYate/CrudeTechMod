@@ -3,14 +3,13 @@ package me.joshua.crudetechmod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import me.joshua.crudetechmod.Energy.ModCapabilityEnergy;
 import me.joshua.crudetechmod.Init.ModBlocks;
 import me.joshua.crudetechmod.Init.ModContainerTypes;
 import me.joshua.crudetechmod.Init.ModEntities;
 import me.joshua.crudetechmod.Init.ModItems;
 import me.joshua.crudetechmod.Init.ModTileEntityTypes;
 import me.joshua.crudetechmod.Packets.ExplosiveJumpPacket;
-import me.joshua.crudetechmod.Packets.GeneratorPacket;
+import me.joshua.crudetechmod.Packets.Packets;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -38,13 +37,11 @@ public class CrudeTechMod {
 		ModEntities.ENTITY_TYPES.register(modEventBus);
 		ModTileEntityTypes.TILE_ENTITY_TYPES.register(modEventBus);
 		ModContainerTypes.CONTAINER_TYPES.register(modEventBus);
-
 	}
+	
 
 	private void setup(final FMLCommonSetupEvent event) {
-		ExplosiveJumpPacket.INSTANCE.registerMessage(ExplosiveJumpPacket.i++, ExplosiveJumpPacket.class, ExplosiveJumpPacket::encode, ExplosiveJumpPacket::decode, ExplosiveJumpPacket::handle);
-		GeneratorPacket.INSTANCE.registerMessage(GeneratorPacket.i++, GeneratorPacket.class, GeneratorPacket::encode, GeneratorPacket::decode, GeneratorPacket::handle);
-		ModCapabilityEnergy.register();
+		Packets.INSTANCE.registerMessage(Packets.i++, ExplosiveJumpPacket.class, ExplosiveJumpPacket::encode, ExplosiveJumpPacket::decode, ExplosiveJumpPacket::handle);
 	}
 
 	private void doClientStuff(final FMLClientSetupEvent event) {
@@ -56,7 +53,7 @@ public class CrudeTechMod {
 	}
 
 	public static class CrudeTechTab extends ItemGroup {
-		public static final CrudeTechTab instance = new CrudeTechTab(ItemGroup.GROUPS.length, "TAB");
+		public static final CrudeTechTab INSTANCE = new CrudeTechTab(ItemGroup.GROUPS.length, "TAB");
 
 		private CrudeTechTab(int index, String label) {
 			super(index, label);

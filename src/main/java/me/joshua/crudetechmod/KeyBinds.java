@@ -2,9 +2,9 @@ package me.joshua.crudetechmod;
 
 import org.lwjgl.glfw.GLFW;
 
-import me.joshua.crudetechmod.Energy.ModCapabilityEnergy;
 import me.joshua.crudetechmod.Init.ModItems;
 import me.joshua.crudetechmod.Packets.ExplosiveJumpPacket;
+import me.joshua.crudetechmod.Packets.Packets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.settings.KeyBinding;
@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -26,13 +27,16 @@ public class KeyBinds {
 	@SubscribeEvent
 	public static void onInput(InputEvent.KeyInputEvent event) {
 		Minecraft minecraft = Minecraft.getInstance();
+		if(!minecraft.isGameFocused()) {
+			return;
+		}
 		ClientPlayerEntity player = minecraft.player;
 		if (player != null) {
 			ItemStack feet = player.getItemStackFromSlot(EquipmentSlotType.FEET);
 
 			if (event.getKey() == keyBindings[0].getKey().getKeyCode() && event.getAction() == 0
 					&& feet.getItem() == ModItems.KABOOTS.get()) {
-				feet.getCapability(ModCapabilityEnergy.ENERGY).ifPresent(handler -> {
+				feet.getCapability(CapabilityEnergy.ENERGY).ifPresent(handler -> {
 					int slot = -1;
 					for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 						if (player.inventory.getStackInSlot(i).getItem() == Items.GUNPOWDER) {
@@ -48,7 +52,7 @@ public class KeyBinds {
 						} else {
 							ExplosiveJumpPacket.createBoom(player, false, false, 1.5F);
 						}
-						ExplosiveJumpPacket.INSTANCE.sendToServer(new ExplosiveJumpPacket(slot));
+						Packets.INSTANCE.sendToServer(new ExplosiveJumpPacket(slot));
 					}
 				});
 			}

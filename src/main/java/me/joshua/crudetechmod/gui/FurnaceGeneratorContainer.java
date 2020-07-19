@@ -31,20 +31,15 @@ public class FurnaceGeneratorContainer extends Container {
 		int startX = 8;
 		int startY = 8;
 		int slotSizePlus2 = 18;
-		/*
-		 * for(int row = 0; row<1; row++) { for(int column = 0; column < 2; column++) {
-		 * this.addSlot(new Slot(tileEntity, row * 9 + column, startX + (column *
-		 * slotSizePlus2), startY + (row * slotSizePlus2))); } }
-		 */
-		this.addSlot(new ModFuelSlot(tileEntityIn, 0, startX, startY + (2 * slotSizePlus2) - 3));
+		this.addSlot(new ModFuelSlot(tileEntityIn, 0, startX, startY + (2 * slotSizePlus2) - 1));
 		this.addSlot(new ModModifierSlot(tileEntityIn, 1, startX + (8 * slotSizePlus2), startY - 1));
 		for (int i = 2; i < this.tileEntity.SIZE; i++) {
 			this.addSlot(
-					new ModEnergySlot(tileEntityIn, i, startX + (8 * slotSizePlus2), startY + ((i - 1) * slotSizePlus2)));
+					new ModEnergySlot(tileEntityIn, i, startX + (7 * slotSizePlus2) - 5, startY + ((i - 2) * slotSizePlus2) -1));
 		}
 
 		// Main Player Inventory
-		int startPlayerInvY = startY * 3 + 43;
+		int startPlayerInvY = startY * 3 + 45;
 		for (int row = 0; row < 3; row++) {
 			for (int column = 0; column < 9; column++) {
 				this.addSlot(new Slot(playerInventory, 9 + (row * 9) + column, startX + (column * slotSizePlus2),

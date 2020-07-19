@@ -2,8 +2,6 @@ package me.joshua.crudetechmod.Packets;
 
 import java.util.function.Supplier;
 
-import me.joshua.crudetechmod.CrudeTechMod;
-import me.joshua.crudetechmod.Energy.ModCapabilityEnergy;
 import me.joshua.crudetechmod.Init.ModItems;
 import me.joshua.crudetechmod.World.Boom;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,13 +11,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Explosion;
+import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class ExplosiveJumpPacket {
 	private final int key;
@@ -42,15 +38,16 @@ public class ExplosiveJumpPacket {
 			sender.inventory.getStackInSlot(msg.key);
 			ItemStack feet = sender.getItemStackFromSlot(EquipmentSlotType.FEET);
 			if (feet.getItem() == ModItems.KABOOTS.get()) {
-				feet.getCapability(ModCapabilityEnergy.ENERGY).ifPresent(handler -> {
-					if (sender.inventory.getStackInSlot(msg.key).getItem() == Items.GUNPOWDER) {
-						sender.inventory.decrStackSize(msg.key, 1);
+				feet.getCapability(CapabilityEnergy.ENERGY).ifPresent(handler -> {
+					if (sender.inventory.getStackInSlot(msg.key).getItem() == Items.GUNPOWDER && !sender.isSpectator()) {
+						if(!sender.isCreative()) {
+							sender.inventory.decrStackSize(msg.key, 1);
+						}
 						int max = handler.getMaxEnergyStored();
 						int div = 100;
 						int ext = handler.extractEnergy(max / div, false);
 
 						if (ext == max / div) { // full block
-							CrudeTechMod.log("full block");
 							createBoom(sender, false, false, 1.5F);
 							if (handler.getEnergyStored() == 0) {
 								sender.sendMessage(new TranslationTextComponent("Your boots ran out of power!"));
@@ -90,10 +87,4 @@ public class ExplosiveJumpPacket {
 		explosion.doExplosionA(server, damage);
 		explosion.doExplosionB(true);
 	}
-	
-	private static final String PROTOCOL_VERSION = "1";
-	public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-			new ResourceLocation(CrudeTechMod.MOD_ID, "explosive_jump_packet"), () -> PROTOCOL_VERSION,
-			PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
-	public static int i=0;
 }

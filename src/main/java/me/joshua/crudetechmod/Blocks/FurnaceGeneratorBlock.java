@@ -1,5 +1,6 @@
 package me.joshua.crudetechmod.Blocks;
 
+import me.joshua.crudetechmod.CrudeTechMod;
 import me.joshua.crudetechmod.Init.ModTileEntityTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -35,7 +36,14 @@ public class FurnaceGeneratorBlock extends Block{
 		if(!worldIn.isRemote) {
 			TileEntity tile = worldIn.getTileEntity(pos);
 			if(tile instanceof FurnaceGeneratorTileEntity) {
-				NetworkHooks.openGui((ServerPlayerEntity) player, (FurnaceGeneratorTileEntity) tile, pos);
+				ServerPlayerEntity spe = (ServerPlayerEntity) player;
+				FurnaceGeneratorTileEntity gen = (FurnaceGeneratorTileEntity) tile;
+				if(spe.isSneaking()) {
+					gen.updateNegPos(gen.getPos());
+				}
+				else {
+					NetworkHooks.openGui(spe, gen, pos);
+				}
 			}
 		}
 		return ActionResultType.SUCCESS;
@@ -43,6 +51,7 @@ public class FurnaceGeneratorBlock extends Block{
 	
 	@Override
 	public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+		CrudeTechMod.log("onReplace");
 		if(state.getBlock() != newState.getBlock()) {
 			TileEntity te = worldIn.getTileEntity(pos);
 			if(te instanceof FurnaceGeneratorTileEntity) {
